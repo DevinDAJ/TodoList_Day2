@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'add_task.dart';
+import 'view_detail.dart';
 
 
 class TodoList extends StatefulWidget {
@@ -29,6 +30,7 @@ class _TodoListState extends State<TodoList> {
         itemBuilder: (context, index){
           return Card(
             child: ListTile(
+              onTap: () => viewDetail(context, listPerson[index]),
               leading: Icon(Icons.person),
               title: Text(listPerson[index].nama),
               subtitle: Text(listPerson[index].tugas),
@@ -46,6 +48,10 @@ class _TodoListState extends State<TodoList> {
         },
       ),
     );
+  }
+
+  void viewDetail(BuildContext context, TaskPerson person){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=> Detail(person)));
   }
 
   void loadTask(){
