@@ -60,14 +60,18 @@ class _AddTaskState extends State<AddTask> {
     );
   }
 
+  void moveToLastScreen(){
+    Navigator.pop(context);
+  }
+
   void createData() async {
     if(_formKey.currentState.validate()){
       _formKey.currentState.save();
       DocumentReference ref = await Firestore.instance.collection('todolist').add({'name': person.nama , 'task':person.tugas});
       setState(() {
        person.id = ref.documentID;
-       
       });
+      moveToLastScreen();
     }
   }
 }

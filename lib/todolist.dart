@@ -13,12 +13,32 @@ class _TodoListState extends State<TodoList> {
   var listPerson = List<TaskPerson>(); // membuat variable list
 
   @override
+  void initState() {
+    super.initState();
+    loadTask();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Todo List"),
       ),
-      body: Column(),
+      body: ListView.builder(
+        itemCount: listPerson.length,
+        itemBuilder: (context, index){
+          return Card(
+            child: ListTile(
+              leading: Icon(Icons.person),
+              title: Text(listPerson[index].nama),
+              subtitle: Text(listPerson[index].tugas),
+              // method yang lebih aman utk memanggil 
+              //title: Text("${listPerson[index].nama}"),
+              //subtitle: Text("${listPerson[index].tugas}"),
+            ),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: (){
@@ -26,6 +46,16 @@ class _TodoListState extends State<TodoList> {
         },
       ),
     );
+  }
+
+  void loadTask(){
+    Firestore.instance.collection('todolist').snapshots().listen((value){
+      List<TaskPerson> taskPerson = value.documents.map((doc)=> TaskPerson.fromDocument(doc)).toList();
+
+      setState(() {
+       listPerson = taskPerson;
+      });
+    });
   }
 }
 
