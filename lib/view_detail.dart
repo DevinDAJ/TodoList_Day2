@@ -59,8 +59,13 @@ class _DetailState extends State<Detail> {
                     RaisedButton(
                       child: Text("Update"),
                       onPressed: () => updateTask(person),
+                    ),
+                    RaisedButton(
+                      child: Text("Delete"),
+                      onPressed: () => deleteTask(person),
                     )
-                  ],)
+                  ],
+                  )
               ],
             ),
           ),
@@ -69,15 +74,41 @@ class _DetailState extends State<Detail> {
     );
   }
 
+  void deleteTask(TaskPerson person) async {
+    await Firestore.instance.collection('todolist').document(person.id).delete().whenComplete((){
+      alertDialog("Berhasil", "Data telah di delete");
+    });
+
+    setState(() {
+     person.id = null; 
+     moveToLastScreen();
+    });
+  }
+
   void updateTask(TaskPerson person) async {
     if(_formKey.currentState.validate()){
       _formKey.currentState.save();
-      await Firestore.instance.collection('todolist').document(person.id).updateData({'name': person.nama, 'task': person.tugas});
+      await Firestore.instance.collection('todolist').document(person.id).updateData({'name': person.nama, 'task': person.tugas}).whenComplete((){
+        alertDialog("Berhasil", "Data telah di update");
+      });
 
       setState(() {
        person.nama = person.nama;
        person.tugas = person.tugas; 
       });
     }
+  }
+
+  void alertDialog(String title, String msg){
+    AlertDialog alertDialog = AlertDialog(
+      title: Text(title),
+      content: Text(msg),
+    );
+    showDialog(context: context, builder: (_) => alertDialog);
+
+  }
+
+  void moveToLastScreen(){
+    Navigator.pop(context, true);
   }
 }
